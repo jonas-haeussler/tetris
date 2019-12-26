@@ -4,15 +4,14 @@ import java.awt.*;
 
 public class ShapeS extends Shape {
 
-    public ShapeS(int maxX, int maxY) {
+    public ShapeS(int maxX, int maxY, int initX, int initY) {
         super(maxX, maxY);
         color = Color.GREEN;
-        positions[0] = new Point(4, 1);
-        positions[1] = new Point(5, 1);
-        positions[2] = new Point(5, 0);
-        positions[3] = new Point(6, 0);
-        this.rotationInit = new int[][]{{0, -2}, {-1, -1}, {0, 0}, {-1, 1}};
-
+        relativeLocations[0] = new Point(-1, 1);
+        relativeLocations[1] = new Point(0, 1);
+        relativeLocations[2] = new Point(0, 0);
+        relativeLocations[3] = new Point(1, 0);
+        updatePosition(initX, initY);
 
     }
 

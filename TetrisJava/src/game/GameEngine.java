@@ -8,50 +8,71 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class GameEngine implements ActionListener {
+public class GameEngine implements ActionListener, Runnable {
 
     private Random rand;
     private Gamemode gamemode;
     private int dropTime;
     private Shape activeShape;
+    private Shape nextShape;
     private Timer timer;
-    private boolean isPaused;
+    private AtomicBoolean sync;
 
-
-    GameEngine(Gamemode gm) {
+    GameEngine(Gamemode gm, AtomicBoolean synchronizer) {
         this.gamemode = gm;
+        this.sync = synchronizer;
         dropTime = 1000 / gm.level;
         this.timer = new Timer(dropTime, this);
         timer.setRepeats(true);
         this.rand = new Random();
     }
 
-    private Shape calcRandomShape(){
-        int number = rand.nextInt(7);
+    private Shape randomShape(int initX, int initY){
+        int next = rand.nextInt(7);
+        return createShape(next, initX, initY);
+    }
+    private Shape createShape(int number, int initX, int initY) {
         int maxX = gamemode.getGameField().getColumns() - 1;
         int maxY = gamemode.getGameField().getRows() - 1;
         Shape shape = null;
-        switch (number){
-            case 0 : shape = new ShapeI(maxX, maxY); break;
-            case 1 : shape = new ShapeJ(maxX, maxY); break;
-            case 2 : shape = new ShapeL(maxX, maxY); break;
-            case 3 : shape = new ShapeO(maxX, maxY); break;
-            case 4 : shape = new ShapeS(maxX, maxY); break;
-            case 5 : shape = new ShapeT(maxX, maxY); break;
-            case 6 : shape = new ShapeZ(maxX, maxY); break;
-            default: break;
+        switch (number) {
+            case 0:
+                shape = new ShapeI(maxX, maxY, initX, initY);
+                break;
+            case 1:
+                shape = new ShapeJ(maxX, maxY, initX, initY);
+                break;
+            case 2:
+                shape = new ShapeL(maxX, maxY, initX, initY);
+                break;
+            case 3:
+                shape = new ShapeO(maxX, maxY, initX, initY);
+                break;
+            case 4:
+                shape = new ShapeS(maxX, maxY, initX, initY);
+                break;
+            case 5:
+                shape = new ShapeT(maxX, maxY, initX, initY);
+                break;
+            case 6:
+                shape = new ShapeZ(maxX, maxY, initX, initY);
+                break;
+            default:
+                break;
         }
-        gamemode.addShape(shape);
         return shape;
     }
 
-
-    void start() {
-        activeShape = calcRandomShape();
+    @Override
+    public void run() {
+        activeShape = randomShape(5, 0);
+        gamemode.addShape(activeShape);
+        nextShape = randomShape(5, 0);
         timer.start();
-        while(!isPaused){
-            gamemode.getMainFrame().getGamePanel().repaint();
+        while(!sync.get()){
+            gamemode.getGamePanel().getParent().repaint();
         }
 
     }
@@ -59,12 +80,15 @@ public class GameEngine implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if(!activeShape.update(gamemode.getGameField())){
+            gamemode.incrementShapeCounter();
             gamemode.getGameField().updateGrid(activeShape.getPositions(), gamemode);
-            activeShape = calcRandomShape();
+            activeShape = nextShape;
+            gamemode.addShape(activeShape);
+            nextShape = randomShape(5, 0);
             for(Point p : activeShape.getPositions()){
                 if(gamemode.getGameField().isOccupied(p.x, p.y)) {
                     timer.stop();
-                    isPaused = true;
+                    sync.set(true);
 
                     return;
                 }
@@ -85,5 +109,9 @@ public class GameEngine implements ActionListener {
     }
     void speedDownActiveShape(){
         timer.setDelay(dropTime);
+    }
+
+    public Shape getNextShape() {
+        return nextShape;
     }
 }
