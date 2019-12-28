@@ -1,6 +1,6 @@
 package gameobjects;
 
-import game.Gamemode;
+import game.Game;
 
 import java.awt.*;
 
@@ -20,7 +20,7 @@ public class GameField {
         this(400, 600, 11, 20);
     }
 
-    public GameField(int fieldWidth, int fieldHeight, int columns, int rows) {
+    private GameField(int fieldWidth, int fieldHeight, int columns, int rows) {
         this.fieldWidth = fieldWidth;
         this.fieldHeight = fieldHeight;
         this.columns = columns;
@@ -56,7 +56,7 @@ public class GameField {
         return gridHeight;
     }
 
-    public void updateGrid(Point[] positions, Gamemode gm){
+    public void updateGrid(Point[] positions, Game gm){
         for(Point position : positions){
             grid[position.y][position.x] = true;
             if(isRowFull(position.y)) {

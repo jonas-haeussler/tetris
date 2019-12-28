@@ -7,10 +7,10 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Gamemode {
+public class Game {
     private GameField gameField;
     private ArrayList<Shape> shapes;
-    int level = 2;
+    int level;
     private GameEngine gameEngine;
     private GameHandler gameHandler;
     private Container gamePanel;
@@ -19,10 +19,11 @@ public class Gamemode {
     private int previewOffset;
 
 
-    public Gamemode(AtomicBoolean synchronizer){
+    public Game(AtomicBoolean synchronizer, int gameIndex, int level){
+        this.level = level;
         gameField = new GameField();
         shapes = new ArrayList<>();
-        gameEngine = new GameEngine(this, synchronizer);
+        gameEngine = new GameEngine(this, synchronizer, gameIndex);
         gameHandler = new GameHandler(gameEngine);
         previewOffset = (int) (0.5 * gameField.getFieldWidth());
     }
@@ -102,12 +103,16 @@ public class Gamemode {
     public int getShapesNumber() {
         return shapesNumber;
     }
-    
+
     void incrementShapeCounter(){
         shapesNumber++;
     }
 
     public int getPreviewOffset() {
         return previewOffset;
+    }
+
+    public int getLevel() {
+        return level;
     }
 }
