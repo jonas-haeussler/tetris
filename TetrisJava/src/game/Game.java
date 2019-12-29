@@ -1,10 +1,11 @@
 package game;
 
-import gameobjects.GameField;
-import gameobjects.shapes.Shape;
+import objects.GameField;
+import objects.shapes.Shape;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Game {
@@ -60,6 +61,7 @@ public class Game {
 
     public void deleteRow(int row){
         points += 10;
+        List<Shape> toRemove = new ArrayList<>();
         for(Shape s : shapes){
             for (int i = 0; i < s.getPositions().length; i++) {
                 if (s.getPositions()[i] != null) {
@@ -70,7 +72,10 @@ public class Game {
                     }
                 }
             }
+            if(s.isEmpty())
+                toRemove.add(s);
         }
+        shapes.removeAll(toRemove);
     }
 
     public GameField getGameField() {

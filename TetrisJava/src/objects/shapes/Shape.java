@@ -1,7 +1,7 @@
-package gameobjects.shapes;
+package objects.shapes;
 
 import game.Direction;
-import gameobjects.GameField;
+import objects.GameField;
 
 import java.awt.*;
 
@@ -35,10 +35,10 @@ public abstract class Shape {
                 return false;
             }
         }
-        for (int i = 0; i < relativeLocations.length; i++) {
-            int tempX = relativeLocations[i].x;
-            relativeLocations[i].x = - relativeLocations[i].y;
-            relativeLocations[i].y = tempX;
+        for (Point p : relativeLocations) {
+            int tempX = p.x;
+            p.x = - p.y;
+            p.y = tempX;
         }
         updatePosition(positions[2].x, positions[2].y);
         return true;
@@ -78,5 +78,13 @@ public abstract class Shape {
             else                    position.x += 1;
         }
             return true;
+    }
+    public boolean isEmpty(){
+        for (Point p :positions) {
+            if(p != null){
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -1,7 +1,7 @@
 package game;
 
-import gameobjects.shapes.*;
-import gameobjects.shapes.Shape;
+import objects.shapes.*;
+import objects.shapes.Shape;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,14 +10,17 @@ import java.awt.event.ActionListener;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class GameEngine implements ActionListener, Runnable {
+public class GameEngine implements ActionListener {
+
+    private static final int REPAINT_TIME = 50;
 
     private Random rand;
     private Game game;
     private int dropTime;
     private Shape activeShape;
     private Shape nextShape;
-    private Timer timer;
+    private Timer shapeUpdateTimer;
+    private Timer repaintTimer;
     private AtomicBoolean sync;
     private boolean finished;
     private boolean selected;
@@ -28,8 +31,10 @@ public class GameEngine implements ActionListener, Runnable {
         this.sync = synchronizer;
         this.gameIndex = gameIndex;
         dropTime = 1000 / gm.level;
-        this.timer = new Timer(dropTime, this);
-        timer.setRepeats(true);
+        this.shapeUpdateTimer = new Timer(dropTime, this);
+        shapeUpdateTimer.setRepeats(true);
+        this.repaintTimer = new Timer(REPAINT_TIME, actionEvent -> game.getGamePanel().getParent().repaint());
+        repaintTimer.setRepeats(true);
         this.rand = new Random();
     }
 
@@ -69,16 +74,13 @@ public class GameEngine implements ActionListener, Runnable {
         return shape;
     }
 
-    @Override
-    public void run() {
+    public void start() {
         activeShape = randomShape(5, 0);
         game.addShape(activeShape);
         nextShape = randomShape(5, 0);
-        timer.start();
-        while(!sync.get()){
-            game.getGamePanel().getParent().repaint();
-        }
-        finished = true;
+        shapeUpdateTimer.start();
+        repaintTimer.start();
+        setSelected(gameIndex == 1);
     }
 
     @Override
@@ -91,14 +93,14 @@ public class GameEngine implements ActionListener, Runnable {
             nextShape = randomShape(5, 0);
             for (Point p : activeShape.getPositions()) {
                 if (game.getGameField().isOccupied(p.x, p.y)) {
-                    timer.stop();
+                    shapeUpdateTimer.stop();
                     sync.set(true);
+                    finished = true;
 
                     return;
                 }
 
             }
-            timer.restart();
         }
     }
 
@@ -109,10 +111,10 @@ public class GameEngine implements ActionListener, Runnable {
         activeShape.rotateRight(game.getGameField());
     }
     void speedUpActiveShape(){
-            timer.setDelay(dropTime / 8);
+            shapeUpdateTimer.setDelay(dropTime / 8);
     }
     void speedDownActiveShape(){
-        timer.setDelay(dropTime);
+        shapeUpdateTimer.setDelay(dropTime);
     }
 
     public Shape getNextShape() {

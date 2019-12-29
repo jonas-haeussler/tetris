@@ -47,7 +47,7 @@ public class Main {
         }
         new MainFrame(gList);
         for(Game g : gList) {
-            new Thread(g.getGameEngine()).start();
+            g.getGameEngine().start();
         }
     }
 }

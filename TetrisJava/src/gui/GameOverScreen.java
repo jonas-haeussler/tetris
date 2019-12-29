@@ -51,7 +51,7 @@ class GameOverScreen extends JPanel {
                     mf.dispose();
                     new MainFrame(gList);
                     for (Game g : gList) {
-                        new Thread(g.getGameEngine()).start();
+                        g.getGameEngine().start();
                     }
                     replayButton.removeActionListener(this);
                 }

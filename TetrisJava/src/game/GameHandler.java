@@ -59,5 +59,8 @@ public class GameHandler implements KeyListener {
         if(keyEvent.getKeyCode() == KeyEvent.VK_DOWN || keyEvent.getKeyCode() == KeyEvent.VK_S) {
             gameEngine.speedDownActiveShape();
         }
+        if(keyEvent.getKeyCode() == KeyEvent.VK_ESCAPE){
+            System.exit(0);
+        }
     }
 }

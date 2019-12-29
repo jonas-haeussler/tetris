@@ -1,6 +1,6 @@
-package gameobjects.shapes;
+package objects.shapes;
 
-import gameobjects.GameField;
+import objects.GameField;
 
 import java.awt.*;
 

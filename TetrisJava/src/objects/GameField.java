@@ -1,4 +1,4 @@
-package gameobjects;
+package objects;
 
 import game.Game;
 
